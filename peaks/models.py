@@ -47,8 +47,7 @@ class Pereval(models.Model):
 
 
 class Images(models.Model):
-    title = models.CharField(max_length=30)
     img = models.ImageField("Изображение", upload_to='uploads/')
     pereval = models.ForeignKey(Pereval, on_delete=models.CASCADE)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    #author = models.ForeignKey(Author, on_delete=models.CASCADE)
 
