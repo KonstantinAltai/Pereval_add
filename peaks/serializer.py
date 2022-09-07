@@ -1,42 +1,34 @@
 from rest_framework import serializers
-from .models import Pereval, Level, Author
-from django.contrib.auth.models import User
+from .models import Pereval, Author, User, Images
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('last_name', 'first_name', 'email', )
 
 
 class AuthorSerializer(serializers.ModelSerializer):
-    user =UserSerializer(read_only=True)
+    '''Данные автора'''
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name')
+    email = serializers.CharField(source='user.email')
+
     class Meta:
         model = Author
-        exclude = ('id',)
+        fields = ['first_name', 'last_name', 'otc', 'email', 'phone', ]
 
-class LevelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Level
-        # fields='__all__'
-        exclude = ('id',)
 
 class PerevalSerializer(serializers.ModelSerializer):
-    levels = LevelSerializer(read_only=True)
+    '''Список перевалов'''
     user = AuthorSerializer(read_only=True)
-    #levels = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    levels = serializers.StringRelatedField(many=True)
+    #img = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='Images-detail')
     class Meta:
         model = Pereval
-        # fields= '__all__'
-        exclude = ('id', 'status')
+        fields = ['user', 'beauty_title', 'title', 'other_titles', 'connect',
+                  'add_time', 'lofitude', 'logitude', 'height', 'levels'
+                ]
+
 
 class PerevalDetailSerializer(serializers.ModelSerializer):
-
-    user = UserSerializer(read_only=True)
-
+    '''Сведения по перевалу'''
+    #user = AuthorSerializer(read_only=True)
     class Meta:
         model = Pereval
-        exclude = ('id', )
-
-class PerevalCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Pereval
+        fields = '__all__'
