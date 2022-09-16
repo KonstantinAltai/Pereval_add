@@ -82,6 +82,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'peaks.Author'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

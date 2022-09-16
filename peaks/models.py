@@ -1,14 +1,15 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 
-class Author(models.Model):
+class Author(AbstractUser):
     phone = models.CharField(max_length=20)
     otc = models.CharField(max_length=20)
-    user = models.OneToOneField(User, related_name='name', on_delete=models.CASCADE, blank=True)
-
+    email = models.EmailField(unique=True)
+    #username = None
+    #password = None
     def __str__(self):
-        return self.user.first_name
+        return '{}'.format(self.username + " " + self.email)
 
 
 class Pereval(models.Model):
@@ -34,12 +35,13 @@ class Pereval(models.Model):
 
 
 class Level(models.Model):
-    season = models.CharField(max_length=5, choices=(('win', 'Winter'),
-                                                      ('sum', 'Summer'),
-                                                      ('out', 'Outhemn'),
-                                                      ('spr', 'Spring'),
-                                                      )
-                            )
+    SEASON_CHOICES = (
+        ('WIN', 'Winter'),
+        ('SUM', 'Summer'),
+        ('OUT', 'Outhemn'),
+        ('SPR', 'Spring'),
+    )
+    season = models.CharField(max_length=5, choices=SEASON_CHOICES)
     level = models.CharField(max_length=5, blank=True, null=True)
     pereval = models.ForeignKey(Pereval, on_delete=models.CASCADE, related_name='levels')
 
@@ -48,7 +50,8 @@ class Level(models.Model):
 
 
 class Images(models.Model):
-    img = models.ImageField(upload_to='images/%Y-%m-%d/')
+    data = models.ImageField(upload_to='images/%Y-%m-%d/')
+    title = models.CharField(max_length=125)
     pereval = models.ForeignKey(Pereval, on_delete=models.CASCADE, related_name='img')
 
 

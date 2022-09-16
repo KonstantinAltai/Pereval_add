@@ -1,7 +1,8 @@
 from rest_framework.response import Response
 from .models import Pereval
-from .serializer import PerevalSerializer, PerevalDetailSerializer
+from .serializer import PerevalSerializer, PerevalDetailSerializer, PerevalCreateSerializer
 from rest_framework.views import APIView
+from rest_framework import generics, status
 
 
 class PerevalListView(APIView):
@@ -13,23 +14,45 @@ class PerevalListView(APIView):
         return Response(serializer.data)
 
 
-class PerevalDetailView(APIView):
-    """ Вывод сведений о перевале"""
-
-    def get(self, request, pk):
-        pereval = Pereval.objects.get(id=pk)
-        serializer = PerevalDetailSerializer(pereval)
-        return Response(serializer.data)
+class PerevalCreateView(generics.CreateAPIView):
+    queryset = Pereval.objects.all()
+    serializer_class = PerevalCreateSerializer
 
 
-class PerevalCreateView(APIView):
-    '''Добавление сведений о перевале'''
+    def create(self, request, *args, **kwargs):
+        super(PerevalCreateView, self).create(request, args, kwargs)
+        response = {'status': status.HTTP_200_OK,
+                    'message': 'null',
+                    'result': request.data}
+        return Response(response)
 
-    def post(self, request):
-        serializer = PerevalDetailSerializer(data=request.data)
-        if serializer.is_valid():
-            try:
-                serializer.save()
-                return Response(status=200)
-            except ValueError:
-                return Response(status=201)
+
+class PerevalDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Pereval.objects.all()
+    serializer_class = PerevalSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        super(PerevalDetailView, self).retrieve(request, args, kwargs)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        response = {'status': status.HTTP_200_OK,
+                    'message': 'null',
+                    'result': data}
+        return Response(response)
+
+    def patch(self, request, *args, **kwargs):
+        super(PerevalDetailView, self).patch(request, args, kwargs)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        response = {'status': status.HTTP_200_OK,
+                    'message': 'null',
+                    'result': data}
+        return Response(response)
+
+    def delete(self, request, *args, **kwargs):
+        super(PerevalDetailView, self).delete(request, args, kwargs)
+        response = {'status': status.HTTP_200_OK,
+                    'message': 'null'}
+        return Response(response)
